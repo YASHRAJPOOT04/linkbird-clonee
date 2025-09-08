@@ -13,7 +13,9 @@ export async function GET(request: NextRequest) {
     if (!cookieHeader.includes("better-auth.session_token")) {
       return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
     }
-    const session = await auth.api.getSession({ headers: { cookie: cookieHeader } });
+    const forwardedHeaders = new Headers(request.headers);
+    forwardedHeaders.set("cookie", cookieHeader);
+    const session = await auth.api.getSession({ headers: forwardedHeaders });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized: invalid or expired session" }, { status: 401 });
     }
@@ -197,10 +199,10 @@ export async function GET(request: NextRequest) {
         },
         summary: {
           totalLeads: totalLeads[0]?.count || 0,
-          statusCounts: statusCounts.reduce((acc, item) => {
+          statusCounts: statusCounts.reduce<Record<string, number>>((acc: Record<string, number>, item: { status: string; count: number }) => {
             acc[item.status] = item.count;
             return acc;
-          }, {} as Record<string, number>),
+          }, {}),
         },
       },
     });
@@ -222,7 +224,9 @@ export async function POST(request: NextRequest) {
     if (!cookieHeader.includes("better-auth.session_token")) {
       return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
     }
-    const session = await auth.api.getSession({ headers: { cookie: cookieHeader } });
+    const forwardedHeaders = new Headers(request.headers);
+    forwardedHeaders.set("cookie", cookieHeader);
+    const session = await auth.api.getSession({ headers: forwardedHeaders });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized: invalid or expired session" }, { status: 401 });
     }
@@ -297,7 +301,9 @@ export async function PUT(request: NextRequest) {
     if (!cookieHeader.includes("better-auth.session_token")) {
       return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
     }
-    const session = await auth.api.getSession({ headers: { cookie: cookieHeader } });
+    const forwardedHeaders = new Headers(request.headers);
+    forwardedHeaders.set("cookie", cookieHeader);
+    const session = await auth.api.getSession({ headers: forwardedHeaders });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized: invalid or expired session" }, { status: 401 });
     }

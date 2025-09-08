@@ -12,7 +12,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
     }
     // Get session from better-auth
-    const session = await auth.api.getSession({ headers: { cookie: cookieHeader } });
+    const forwardedHeaders = new Headers(request.headers);
+    // Ensure cookie header is present on the forwarded headers
+    forwardedHeaders.set("cookie", cookieHeader);
+    const session = await auth.api.getSession({ headers: forwardedHeaders });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized: invalid or expired session" }, { status: 401 });
     }
@@ -34,7 +37,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate additional metrics for each campaign
     const campaignsWithMetrics = await Promise.all(
-      userCampaigns.map(async (campaign) => {
+      userCampaigns.map(async (campaign: { id: string; name: string; status: string; createdAt: Date; userId: string }) => {
         // TODO: Add actual lead counts and metrics calculation
         // For now, we'll return mock data
         const mockMetrics = {
