@@ -1,7 +1,4 @@
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/db";
-import { users, sessions, accounts, verificationTokens } from "@/db/schema";
 
 // Get the deployment URL for trusted origins
 const getDeploymentUrl = () => {
@@ -22,26 +19,11 @@ const getDeploymentUrl = () => {
 const deploymentUrl = getDeploymentUrl();
 
 export const auth = betterAuth({
-  database: drizzleAdapter(db, {
-    provider: "pg",
-    schema: {
-      users,
-      sessions,
-      accounts,
-      verificationTokens,
-    },
-  }),
   secret: process.env.BETTER_AUTH_SECRET || "fallback-secret-for-development",
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false, // Disabled for development - enable in production
+    requireEmailVerification: false, // Disabled for development
   },
-  socialProviders: process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    },
-  } : {},
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day

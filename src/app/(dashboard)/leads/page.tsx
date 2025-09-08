@@ -1,117 +1,145 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLeadDetailActions } from "@/lib/store/leadDetailStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import LeadsTable from "@/components/leads/LeadsTable";
-import LeadDetailSheet from "@/components/leads/LeadDetailSheet";
-import { Plus, Users, TrendingUp, Mail, CheckCircle, AlertCircle } from "lucide-react";
+import { Plus, RefreshCw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 interface Lead {
   id: string;
   name: string;
   email: string;
-  company: string | null;
+  company?: string;
   status: "Pending" | "Contacted" | "Responded" | "Converted";
-  lastContactDate: string | null;
+  lastContactDate?: string;
   createdAt: string;
   campaignId: string;
-  campaign: {
-    id: string;
-    name: string;
-    status: string;
-  };
+  campaignName?: string;
 }
 
-// Delete lead function
-async function deleteLead(leadId: string): Promise<void> {
-  const response = await fetch(`/api/leads?id=${leadId}`, {
-    method: "DELETE",
-    credentials: "include",
+// Mock sample data for development
+const sampleLeads: Lead[] = [
+  {
+    id: "lead_1",
+    name: "Alice Johnson",
+    email: "alice@techcorp.com",
+    company: "TechCorp Inc.",
+    status: "Responded",
+    lastContactDate: new Date(Date.now() - 86400000).toISOString(),
+    createdAt: new Date(Date.now() - 172800000).toISOString(),
+    campaignId: "camp_1",
+    campaignName: "Summer Marketing Campaign",
+  },
+  {
+    id: "lead_2",
+    name: "Bob Smith",
+    email: "bob@startup.io",
+    company: "Startup.io",
+    status: "Contacted",
+    lastContactDate: new Date(Date.now() - 43200000).toISOString(),
+    createdAt: new Date(Date.now() - 259200000).toISOString(),
+    campaignId: "camp_1",
+    campaignName: "Summer Marketing Campaign",
+  },
+  {
+    id: "lead_3",
+    name: "Carol Davis",
+    email: "carol@enterprise.com",
+    company: "Enterprise Solutions",
+    status: "Pending",
+    createdAt: new Date(Date.now() - 345600000).toISOString(),
+    campaignId: "camp_2",
+    campaignName: "Product Launch Campaign",
+  },
+  {
+    id: "lead_4",
+    name: "David Wilson",
+    email: "david@consulting.biz",
+    company: "Wilson Consulting",
+    status: "Converted",
+    lastContactDate: new Date(Date.now() - 604800000).toISOString(),
+    createdAt: new Date(Date.now() - 691200000).toISOString(),
+    campaignId: "camp_3",
+    campaignName: "Holiday Special Campaign",
+  },
+];
+
+// Fetch leads function
+async function fetchLeads(): Promise<Lead[]> {
+  // Return sample data for development
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(sampleLeads), 500);
   });
-  
-  if (!response.ok) {
-    throw new Error(`Failed to delete lead: ${response.statusText}`);
-  }
-  
-  const result = await response.json();
-  
-  if (!result.success) {
-    throw new Error(result.error || "Failed to delete lead");
-  }
 }
+
+const statusColors = {
+  Pending: "bg-yellow-100 text-yellow-800",
+  Contacted: "bg-blue-100 text-blue-800",
+  Responded: "bg-green-100 text-green-800",
+  Converted: "bg-purple-100 text-purple-800",
+};
 
 export default function LeadsPage() {
-  const queryClient = useQueryClient();
-  const { openSheet } = useLeadDetailActions();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Delete lead mutation
-  const deleteMutation = useMutation({
-    mutationFn: deleteLead,
-    onSuccess: (_, leadId) => {
-      // Remove the lead from the leads list cache
-      queryClient.setQueryData(["leads"], (oldData: unknown) => {
-        if (!oldData) return oldData;
-        
-        return {
-          ...oldData,
-          pages: (oldData as { pages: Array<{ data: { leads: Lead[] } }> }).pages.map((page) => ({
-            ...page,
-            data: {
-              ...page.data,
-              leads: page.data.leads.filter((lead: Lead) => lead.id !== leadId),
-            },
-          })),
-        };
-      });
-      
-      // Invalidate and refetch the leads list
-      queryClient.invalidateQueries({ queryKey: ["leads"] });
-      
-      toast.success("Lead deleted successfully");
-    },
-    onError: (error) => {
-      toast.error(`Failed to delete lead: ${error.message}`);
-    },
+  // Fetch leads query
+  const {
+    data: leads = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["leads"],
+    queryFn: fetchLeads,
   });
 
-  // Handle lead actions
-  const handleLeadClick = (lead: Lead) => {
-    openSheet(lead.id);
-  };
-
-  const handleEdit = (_lead: Lead) => {
-    // TODO: Implement edit lead modal/form
-    toast.info("Edit lead functionality coming soon");
-  };
-
-  const handleDelete = (lead: Lead) => {
-    if (window.confirm(`Are you sure you want to delete "${lead.name}"?`)) {
-      deleteMutation.mutate(lead.id);
+  // Handle refresh
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetch();
+      toast.success("Leads refreshed");
+    } catch (error) {
+      toast.error("Failed to refresh leads");
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
-  const handleStatusChange = (_lead: Lead, _newStatus: Lead["status"]) => {
-    // This will be handled by the LeadDetailSheet component
-    // The status change will trigger a refetch of the leads list
-    toast.info(`Status change will be handled in the lead detail view`);
-  };
-
   const handleCreateLead = () => {
-    // TODO: Implement create lead modal/form
     toast.info("Create lead functionality coming soon");
   };
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    queryClient.invalidateQueries({ queryKey: ["leads"] });
-    setTimeout(() => setIsRefreshing(false), 1000);
-    toast.success("Leads refreshed");
-  };
+  // Calculate summary stats
+  const totalLeads = leads.length;
+  const pendingLeads = leads.filter((l) => l.status === "Pending").length;
+  const convertedLeads = leads.filter((l) => l.status === "Converted").length;
+  const conversionRate = totalLeads > 0 ? (convertedLeads / totalLeads) * 100 : 0;
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-8">
+              <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Failed to load leads
+              </h3>
+              <p className="text-gray-500 mb-4">
+                {error instanceof Error ? error.message : "An unexpected error occurred"}
+              </p>
+              <Button onClick={() => refetch()} variant="outline">
+                Try Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -120,7 +148,7 @@ export default function LeadsPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Leads</h1>
           <p className="text-gray-600">
-            Manage your leads and track their progress through your sales funnel
+            Manage your leads and track their progress through the sales funnel
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -130,7 +158,7 @@ export default function LeadsPage() {
             onClick={handleRefresh}
             disabled={isRefreshing}
           >
-            <AlertCircle className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
             Refresh
           </Button>
           <Button onClick={handleCreateLead}>
@@ -140,71 +168,136 @@ export default function LeadsPage() {
         </div>
       </div>
 
-      {/* Quick Stats */}
+      {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <Users className="h-4 w-4 mr-2" />
+            <CardTitle className="text-sm font-medium text-gray-600">
               Total Leads
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-gray-500">All time</p>
+            <div className="text-2xl font-bold">{totalLeads}</div>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <Mail className="h-4 w-4 mr-2" />
-              New This Week
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Pending Leads
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">—</div>
-            <p className="text-xs text-gray-500">Last 7 days</p>
+            <div className="text-2xl font-bold text-yellow-600">{pendingLeads}</div>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Converted
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Converted Leads
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">—</div>
-            <p className="text-xs text-gray-500">This month</p>
+            <div className="text-2xl font-bold text-green-600">{convertedLeads}</div>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <TrendingUp className="h-4 w-4 mr-2" />
+            <CardTitle className="text-sm font-medium text-gray-600">
               Conversion Rate
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">—%</div>
-            <p className="text-xs text-gray-500">This month</p>
+            <div className="text-2xl font-bold">
+              {conversionRate.toFixed(1)}%
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Leads Table */}
-      <LeadsTable
-        onLeadClick={handleLeadClick}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onStatusChange={handleStatusChange}
-      />
-
-      {/* Lead Detail Sheet */}
-      <LeadDetailSheet />
+      <Card>
+        <CardHeader>
+          <CardTitle>All Leads</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="animate-pulse flex space-x-4 py-4">
+                  <div className="rounded-full bg-gray-200 h-10 w-10"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Lead
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Company
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Campaign
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Last Contact
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {leads.map((lead) => (
+                    <tr key={lead.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {lead.name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {lead.email}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {lead.company || "-"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            statusColors[lead.status]
+                          }`}
+                        >
+                          {lead.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {lead.campaignName || "Unknown Campaign"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {lead.lastContactDate
+                          ? new Date(lead.lastContactDate).toLocaleDateString()
+                          : "Never"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

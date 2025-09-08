@@ -1,19 +1,45 @@
 "use client";
 
 import { useUIStore } from "@/lib/store/uiStore";
+import { useAuth } from "@/components/providers/AuthProvider";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const { session, isLoading } = useAuth();
+  const router = useRouter();
   const sidebarCollapsed = useUIStore((state) => state.sidebarCollapsed);
   const _sidebarMobileOpen = useUIStore((state) => state.sidebarMobileOpen);
   const toggleSidebarMobile = useUIStore((state) => state.toggleSidebarMobile);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !session) {
+      router.push("/login");
+    }
+  }, [session, isLoading, router]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Don't render dashboard if not authenticated
+  if (!session) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
