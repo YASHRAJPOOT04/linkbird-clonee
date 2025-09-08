@@ -20,9 +20,17 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route)) || 
                           pathname === dashboardRoute;
   
-  // Check for better-auth session cookie (Edge-compatible approach)
-  const sessionCookie = request.cookies.get("better-auth.session_token");
+  // Check for better-auth session cookie with multiple possible names
+  const sessionCookie = request.cookies.get("better-auth.session_token") || 
+                       request.cookies.get("session_token") ||
+                       request.cookies.get("auth-session");
   const hasSession = !!sessionCookie?.value;
+  
+  // Debug logging for development
+  if (process.env.NODE_ENV === "development") {
+    console.log(`Middleware: ${pathname}, hasSession: ${hasSession}, cookies:`, 
+      request.cookies.getAll().map(c => c.name));
+  }
   
   // If accessing a protected route without a session, redirect to login
   if (isProtectedRoute && !hasSession) {

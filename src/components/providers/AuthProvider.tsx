@@ -45,13 +45,17 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (result.error) {
-        return { error: result.error.message };
-      } else {
+        console.error("Sign in error:", result.error);
+        return { error: result.error.message || "Invalid email or password" };
+      } else if (result.data) {
         setSession(result.data);
         return {};
+      } else {
+        return { error: "Authentication failed" };
       }
-    } catch (_error) {
-      return { error: "Network error" };
+    } catch (error) {
+      console.error("Network error during sign in:", error);
+      return { error: "Network error. Please check your connection and try again." };
     }
   };
 
@@ -94,6 +98,7 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error) {
       console.error("Google sign in failed:", error);
+      throw new Error("Google authentication is not available");
     }
   };
 

@@ -1,5 +1,5 @@
 // Test script for authentication flow
-const fetch = require('node-fetch');
+// Using Node.js built-in fetch (available in Node 18+)
 
 async function testAuth() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://linkbird-clone-kmqf.vercel.app';
