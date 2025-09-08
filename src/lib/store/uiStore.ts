@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { shallow } from "zustand/shallow";
 import { persist } from "zustand/middleware";
 
 interface UIState {
@@ -68,21 +67,15 @@ export const useUIStore = create<UIState>()(
 
 // Selectors for better performance
 export const useSidebarState = () =>
-  useUIStore(
-    (state) => ({
-      sidebarCollapsed: state.sidebarCollapsed,
-      sidebarMobileOpen: state.sidebarMobileOpen,
-    }),
-    shallow
-  );
+  useUIStore((state) => ({
+    sidebarCollapsed: state.sidebarCollapsed,
+    sidebarMobileOpen: state.sidebarMobileOpen,
+  }));
 
 export const useSidebarActions = () =>
-  useUIStore(
-    (state) => ({
-      toggleSidebar: state.toggleSidebar,
-      setSidebarCollapsed: state.setSidebarCollapsed,
-      toggleSidebarMobile: state.toggleSidebarMobile,
-      setSidebarMobileOpen: state.setSidebarMobileOpen,
-    }),
-    shallow
-  );
+  useUIStore((state) => ({
+    toggleSidebar: state.toggleSidebar,
+    setSidebarCollapsed: state.setSidebarCollapsed,
+    toggleSidebarMobile: state.toggleSidebarMobile,
+    setSidebarMobileOpen: state.setSidebarMobileOpen,
+  }));

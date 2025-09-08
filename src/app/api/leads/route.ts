@@ -9,11 +9,7 @@ const MAX_PAGE_SIZE = 100;
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("better-auth.session_token")) {
-      return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
-    }
-    const session = await auth.api.getSession({ headers: { cookie: cookieHeader } });
+    const session = await auth.api.getSession({ headers: request.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized: invalid or expired session" }, { status: 401 });
     }
@@ -218,11 +214,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("better-auth.session_token")) {
-      return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
-    }
-    const session = await auth.api.getSession({ headers: { cookie: cookieHeader } });
+    const session = await auth.api.getSession({ headers: request.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized: invalid or expired session" }, { status: 401 });
     }
@@ -293,11 +285,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("better-auth.session_token")) {
-      return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
-    }
-    const session = await auth.api.getSession({ headers: { cookie: cookieHeader } });
+    const session = await auth.api.getSession({ headers: request.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized: invalid or expired session" }, { status: 401 });
     }

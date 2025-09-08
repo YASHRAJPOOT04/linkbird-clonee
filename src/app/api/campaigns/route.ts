@@ -6,13 +6,8 @@ import { auth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    // Helpful diagnostics for 401s
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("better-auth.session_token")) {
-      return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
-    }
     // Get session from better-auth
-    const session = await auth.api.getSession({ headers: { cookie: cookieHeader } });
+    const session = await auth.api.getSession({ headers: request.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized: invalid or expired session" }, { status: 401 });
     }
