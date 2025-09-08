@@ -34,8 +34,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       const result = await signIn(email, password);
       
       if (result.error) {
-        setError(result.error);
-        toast.error(result.error);
+        const errorMessage = result.error === "Invalid email or password" 
+          ? "Invalid email or password. Please try again." 
+          : result.error;
+        setError(errorMessage);
+        toast.error(errorMessage);
         setIsLoading(false);
       } else {
         toast.success("Successfully signed in!");
@@ -43,7 +46,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         router.push("/campaigns");
       }
     } catch (err) {
-      const errorMessage = "An unexpected error occurred";
+      console.error("Login error:", err);
+      const errorMessage = "Unable to sign in. Please check your connection and try again.";
       setError(errorMessage);
       toast.error(errorMessage);
       setIsLoading(false);
@@ -52,10 +56,12 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
+    setError("");
     try {
       await signInWithGoogle();
     } catch (err) {
-      const errorMessage = "Google login failed";
+      console.error("Google login error:", err);
+      const errorMessage = "Google sign in is currently unavailable. Please try signing in with email and password.";
       setError(errorMessage);
       toast.error(errorMessage);
       setIsLoading(false);
@@ -81,10 +87,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                 type="email"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.trim())}
                 className="pl-10"
                 required
                 disabled={isLoading}
+                autoComplete="email"
               />
             </div>
           </div>
@@ -102,6 +109,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                 className="pl-10 pr-10"
                 required
                 disabled={isLoading}
+                autoComplete="current-password"
+                minLength={6}
               />
               <Button
                 type="button"
@@ -131,27 +140,31 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           </Button>
         </form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <Separator className="w-full" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
+{process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED !== "false" && (
+          <>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={handleGoogleLogin}
-          disabled={isLoading}
-        >
-          <Chrome className="mr-2 h-4 w-4" />
-          {isLoading ? "Signing in..." : "Continue with Google"}
-        </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+            >
+              <Chrome className="mr-2 h-4 w-4" />
+              {isLoading ? "Signing in..." : "Continue with Google"}
+            </Button>
+          </>
+        )}
 
         <div className="text-center text-sm">
           <span className="text-muted-foreground">Don&apos;t have an account? </span>
