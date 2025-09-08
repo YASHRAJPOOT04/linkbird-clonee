@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
     }
     // Get session from better-auth
-    const session = await auth.api.getSession({ headers: { cookie: cookieHeader } });
+    const session = await auth.api.getSession({ headers: request.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized: invalid or expired session" }, { status: 401 });
     }
