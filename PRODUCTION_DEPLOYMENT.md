@@ -14,7 +14,7 @@ BETTER_AUTH_SECRET="your-secure-secret-key-here"
 BETTER_AUTH_URL="https://your-domain.vercel.app"
 NEXT_PUBLIC_APP_URL="https://your-domain.vercel.app"
 
-# Database (if using PostgreSQL in production)
+# Database - REQUIRED for production (PostgreSQL/Neon)
 DATABASE_URL="your-postgresql-connection-string"
 
 # Optional - Google OAuth
@@ -23,13 +23,18 @@ GOOGLE_CLIENT_SECRET="your-google-client-secret"
 NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED="true"
 ```
 
+**Important**: The `DATABASE_URL` is now **required** for production deployment. The application will automatically:
+- Use PostgreSQL/Neon in production when `DATABASE_URL` is set to a PostgreSQL connection string
+- Use SQLite in development (local environment)
+
 ## What Was Fixed
 
-1. ✅ **TypeScript Errors**: Fixed missing `signUp` import in LoginForm
-2. ✅ **ESLint Warnings**: Resolved unused variable warnings
-3. ✅ **Authentication Flow**: Verified login/signup works correctly
-4. ✅ **Database Configuration**: Proper SQLite setup for development
-5. ✅ **Build Process**: All builds now pass successfully
+1. ✅ **Build-Time Database Error**: Fixed SQLite initialization during Vercel build process
+2. ✅ **TypeScript Errors**: Fixed missing `signUp` import in LoginForm
+3. ✅ **ESLint Warnings**: Resolved unused variable warnings
+4. ✅ **Dynamic Database Configuration**: Added production PostgreSQL support
+5. ✅ **Authentication Flow**: Verified login/signup works correctly
+6. ✅ **Build Process**: All builds now pass successfully without database errors
 
 ## Features Working
 
