@@ -6,11 +6,6 @@ import { auth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    // Helpful diagnostics for 401s
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("better-auth.session_token")) {
-      return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
-    }
     // Get session from better-auth
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session) {
@@ -104,9 +99,11 @@ export async function POST(request: NextRequest) {
     const [newCampaign] = await db
       .insert(campaigns)
       .values({
+        id: crypto.randomUUID(),
         name: name.trim(),
         status: status as "Draft" | "Active" | "Paused" | "Completed",
         userId: userId,
+        createdAt: new Date(),
       })
       .returning({
         id: campaigns.id,
@@ -196,8 +193,16 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // TODO: Replace with actual better-auth session validation
-    const _userId = "demo-user-id";
+    // Get session from better-auth
+    const session = await auth.api.getSession({ 
+      headers: request.headers 
+    });
+    
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
+    const userId = session.user.id;
     
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
