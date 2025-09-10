@@ -158,7 +158,7 @@ export default function CampaignsTable({
   }
 
   return (
-    <Card>
+    <Card className="relative z-0 shadow-sm">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <TrendingUp className="h-5 w-5" />
