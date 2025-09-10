@@ -138,6 +138,22 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             {isLoading ? "Signing in..." : "Sign in"}
           </Button>
 
+          {/* Your Account Access Button */}
+          <Button 
+            type="button" 
+            variant="outline" 
+            className="w-full bg-blue-50 hover:bg-blue-100 border-blue-200" 
+            onClick={(e) => {
+              e.preventDefault();
+              setEmail("yashrajpoot0412@gmail.com");
+              setPassword("9452461429");
+              toast.success("Your credentials filled! Click 'Sign in' to access dashboard.");
+            }}
+            disabled={isLoading}
+          >
+            👤 Fill My Credentials (yashrajpoot0412@gmail.com)
+          </Button>
+
           {/* Demo Login Button */}
           <Button 
             type="button" 
