@@ -17,7 +17,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { session, isLoading } = useAuth();
   const router = useRouter();
   const sidebarCollapsed = useUIStore((state) => state.sidebarCollapsed);
-  const _sidebarMobileOpen = useUIStore((state) => state.sidebarMobileOpen);
   const toggleSidebarMobile = useUIStore((state) => state.toggleSidebarMobile);
 
   useEffect(() => {

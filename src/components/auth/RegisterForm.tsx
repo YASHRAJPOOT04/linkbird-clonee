@@ -80,7 +80,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         onSuccess?.();
         router.push("/campaigns");
       }
-    } catch (err) {
+    } catch (error) {
+      console.error("Registration error:", error);
       const errorMessage = "Registration failed. Please try again.";
       setError(errorMessage);
       toast.error(errorMessage);
@@ -92,7 +93,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     setIsLoading(true);
     try {
       await signInWithGoogle();
-    } catch (err) {
+    } catch (error) {
+      console.error("Google registration error:", error);
       const errorMessage = "Google registration failed";
       setError(errorMessage);
       toast.error(errorMessage);

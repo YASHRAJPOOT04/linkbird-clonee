@@ -35,7 +35,8 @@ export const authClient = createAuthClient({
         }
         // Log a structured error so we can see exactly what failed
         console.error("Auth client error:", { status, url, body });
-      } catch (_e) {
+      } catch (error) {
+        console.error("Auth client error (fallback):", error);
         console.error("Auth client error:", ctx?.error ?? {});
       }
     },

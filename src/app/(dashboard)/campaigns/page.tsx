@@ -147,6 +147,7 @@ export default function CampaignsPage() {
       await refetch();
       toast.success("Campaigns refreshed");
     } catch (error) {
+      console.error("Refresh error:", error);
       toast.error("Failed to refresh campaigns");
     } finally {
       setIsRefreshing(false);
@@ -154,8 +155,9 @@ export default function CampaignsPage() {
   };
 
   // Handle campaign actions
-  const handleEdit = (_campaign: Campaign) => {
+  const handleEdit = (campaign: Campaign) => {
     // TODO: Implement edit campaign modal/form
+    console.log("Edit campaign:", campaign.id);
     toast.info("Edit campaign functionality coming soon");
   };
 
@@ -165,8 +167,9 @@ export default function CampaignsPage() {
     }
   };
 
-  const handleView = (_campaign: Campaign) => {
+  const handleView = (campaign: Campaign) => {
     // TODO: Implement view campaign details
+    console.log("View campaign:", campaign.id);
     toast.info("View campaign details coming soon");
   };
 

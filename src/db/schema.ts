@@ -1,9 +1,8 @@
-import { sqliteTable, text, integer, blob } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 
 // Helper function for timestamps
 const timestamp = (name: string) => integer(name, { mode: 'timestamp' });
-const uuid = (name: string) => text(name);
 const boolean = (name: string) => integer(name, { mode: 'boolean' });
 
 // Users table (required by better-auth)

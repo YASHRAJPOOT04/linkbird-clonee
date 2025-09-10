@@ -257,12 +257,14 @@ export async function POST(request: NextRequest) {
     const [newLead] = await db
       .insert(leads)
       .values({
+        id: crypto.randomUUID(),
         name: name.trim(),
         email: email.trim().toLowerCase(),
         company: company?.trim(),
         status: status as "Pending" | "Contacted" | "Responded" | "Converted",
         lastContactDate: lastContactDate ? new Date(lastContactDate) : null,
         campaignId,
+        createdAt: new Date(),
       })
       .returning({
         id: leads.id,

@@ -152,7 +152,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Update campaign
+    // Update campaign (only allow updates to user's own campaigns)
     const [updatedCampaign] = await db
       .update(campaigns)
       .set({
@@ -214,7 +214,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Delete campaign
+    // Delete campaign (only allow deletion of user's own campaigns)
     const [deletedCampaign] = await db
       .delete(campaigns)
       .where(eq(campaigns.id, id))
