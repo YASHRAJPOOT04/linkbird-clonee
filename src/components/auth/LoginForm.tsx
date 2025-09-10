@@ -47,7 +47,17 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       }
     } catch (err) {
       console.error("Login error:", err);
-      const errorMessage = "Unable to sign in. Please check your connection and try again.";
+      let errorMessage = "Unable to sign in. Please check your connection and try again.";
+      
+      // Check for specific error types
+      if (err instanceof Error) {
+        if (err.message.includes("invalid origin") || err.message.includes("origin")) {
+          errorMessage = "Authentication service configuration error. Please contact support.";
+        } else if (err.message.includes("network") || err.message.includes("fetch")) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        }
+      }
+      
       setError(errorMessage);
       toast.error(errorMessage);
       setIsLoading(false);
