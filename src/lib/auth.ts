@@ -23,12 +23,12 @@ const deploymentUrl = getDeploymentUrl();
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg",
+    provider: "sqlite",
     schema: {
-      users,
-      sessions,
-      accounts,
-      verifications,
+      user: users,
+      session: sessions,
+      account: accounts,
+      verification: verifications,
     },
   }),
   secret: process.env.BETTER_AUTH_SECRET || "fallback-secret-for-development",
