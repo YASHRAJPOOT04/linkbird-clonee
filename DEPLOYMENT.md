@@ -9,35 +9,66 @@ To ensure proper authentication functionality in the deployed application, follo
 Set the following environment variables in your Vercel project settings:
 
 ```
-# Database
-DATABASE_URL=your_postgresql_connection_string_here
+# Database (Required)
+DATABASE_URL=your_neon_postgresql_connection_string_here
 
-# Better Auth
-BETTER_AUTH_SECRET=your_secret_key_here
-BETTER_AUTH_URL=https://linkbird-clone-kmqf.vercel.app
-NEXT_PUBLIC_APP_URL=https://linkbird-clone-kmqf.vercel.app
+# Better Auth (Required)
+BETTER_AUTH_SECRET=your_strong_random_secret_key_here
+BETTER_AUTH_URL=https://your-vercel-deployment-url.vercel.app
+NEXT_PUBLIC_APP_URL=https://your-vercel-deployment-url.vercel.app
 
-# Google OAuth (optional)
+# Google OAuth (Optional)
 GOOGLE_CLIENT_ID=your_google_client_id_here
 GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=true
 ```
 
-### 2. Deployment Settings
+**Important Notes:**
+- Replace `your-vercel-deployment-url.vercel.app` with your actual Vercel deployment URL
+- The `BETTER_AUTH_SECRET` should be a strong, random string (at least 32 characters)
+- The `DATABASE_URL` must be a PostgreSQL connection string (Neon, Supabase, etc.)
 
-1. **Build Command**: `npm run build`
-2. **Output Directory**: `.next`
-3. **Install Command**: `npm install`
+### 2. Step-by-Step Vercel Deployment
 
-### 3. Database Setup
+1. **Push your code to GitHub** (if not already done)
 
-Ensure your PostgreSQL database is properly set up and accessible from Vercel:
+2. **Connect to Vercel**:
+   - Go to [vercel.com](https://vercel.com) and sign in
+   - Click "New Project"
+   - Import your GitHub repository
 
-1. Use a cloud PostgreSQL provider (like Neon, Supabase, or Railway)
-2. Make sure the database connection string is correctly set in the `DATABASE_URL` environment variable
-3. Run database migrations using Drizzle:
+3. **Configure Build Settings**:
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `.next`
+   - **Install Command**: `npm install`
+   - **Node.js Version**: 18.x or higher
+
+4. **Set Environment Variables** (in Vercel dashboard):
+   - Go to Project Settings → Environment Variables
+   - Add all the environment variables listed in section 1 above
+
+5. **Deploy**: Click "Deploy" and wait for the build to complete
+
+### 3. Database Setup (Neon - Recommended)
+
+**Step-by-step Neon Database Setup:**
+
+1. **Create a free Neon account**: Go to [neon.tech](https://neon.tech) and sign up
+2. **Create a new project**: Click "Create Project" and choose a name like "linkbird"
+3. **Get your connection string**: 
+   - Go to your project dashboard
+   - Click "Connection Details"
+   - Copy the connection string (it looks like: `postgresql://username:password@host/database?sslmode=require`)
+4. **Set the DATABASE_URL**: Use this connection string as your `DATABASE_URL` environment variable in Vercel
+5. **Push the database schema**: After deployment, run:
    ```bash
    npm run db:push
    ```
+
+**Alternative Database Providers:**
+- **Supabase**: Similar setup, get PostgreSQL connection string from project settings
+- **Railway**: Create PostgreSQL service and get connection string
+- **Planetscale**: MySQL alternative (requires schema changes)
 
 ### 4. Authentication Configuration
 
@@ -47,7 +78,46 @@ The authentication system is configured to work with the Vercel deployment. Make
 2. The `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` match your Vercel deployment URL
 3. If using Google OAuth, ensure the redirect URIs in your Google Cloud Console project include your Vercel deployment URL
 
-### 5. Troubleshooting
+### 5. Post-Deployment Setup
+
+After successful deployment:
+
+1. **Initialize Database Schema**:
+   ```bash
+   # Install dependencies locally if not done
+   npm install
+   
+   # Set your production DATABASE_URL temporarily in .env.local
+   DATABASE_URL=your_neon_connection_string_here
+   
+   # Push schema to production database
+   npm run db:push
+   ```
+
+2. **Test the deployment**:
+   - Visit your Vercel URL
+   - Try to sign up with a new account
+   - Test login functionality
+   - Check that you can access the dashboard
+
+### 6. Common Deployment Issues & Solutions
+
+**Build Errors:**
+- ❌ `DATABASE_URL is not defined` → Add DATABASE_URL to Vercel environment variables
+- ❌ `Module not found: better-sqlite3` → This is expected, the app now uses PostgreSQL
+- ❌ `Auth configuration error` → Check BETTER_AUTH_SECRET and BETTER_AUTH_URL are set
+
+**Runtime Errors:**
+- ❌ `Database connection failed` → Verify your DATABASE_URL is correct and database is accessible
+- ❌ `Auth endpoints returning 500` → Check all auth environment variables are set correctly
+- ❌ `CORS errors` → Ensure BETTER_AUTH_URL matches your exact Vercel URL
+
+**Authentication Issues:**
+- ❌ `Login not working` → Check database schema is pushed with `npm run db:push`
+- ❌ `Sessions not persisting` → Verify cookie settings in auth configuration
+- ❌ `Redirects not working` → Check middleware configuration
+
+### 7. Legacy Troubleshooting
 
 If you encounter authentication issues in your deployed application:
 
