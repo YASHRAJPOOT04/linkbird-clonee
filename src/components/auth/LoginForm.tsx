@@ -27,30 +27,9 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
-    try {
-      const result = await signIn(email, password);
-      
-      if (result.error) {
-        const errorMessage = result.error === "Invalid email or password" 
-          ? "Invalid email or password. Please try again." 
-          : result.error;
-        setError(errorMessage);
-        toast.error(errorMessage);
-        setIsLoading(false);
-      } else {
-        toast.success("Successfully signed in!");
-        onSuccess?.();
-        // Force redirect to campaigns page
-        window.location.href = "/campaigns";
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      const errorMessage = "Unable to sign in. Please check your connection and try again.";
-      setError(errorMessage);
-      toast.error(errorMessage);
-      setIsLoading(false);
-    }
+    toast.success("Opening dashboard...");
+    // Unconditional redirect to dashboard as requested
+    window.location.href = "/campaigns";
   };
 
   const handleGoogleLogin = async () => {
