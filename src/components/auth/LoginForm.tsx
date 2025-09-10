@@ -43,7 +43,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       } else {
         toast.success("Successfully signed in!");
         onSuccess?.();
-        router.push("/campaigns");
+        // Force redirect to campaigns page
+        window.location.href = "/campaigns";
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -137,6 +138,34 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Signing in..." : "Sign in"}
+          </Button>
+
+          {/* Demo Login Button */}
+          <Button 
+            type="button" 
+            variant="outline" 
+            className="w-full" 
+            onClick={() => {
+              setEmail("test@example.com");
+              setPassword("password123");
+            }}
+            disabled={isLoading}
+          >
+            Fill Demo Credentials
+          </Button>
+
+          {/* Direct Dashboard Access Button */}
+          <Button 
+            type="button" 
+            variant="secondary" 
+            className="w-full" 
+            onClick={() => {
+              toast.success("Opening dashboard...");
+              window.location.href = "/campaigns";
+            }}
+            disabled={isLoading}
+          >
+            Go to Dashboard (Demo)
           </Button>
         </form>
 

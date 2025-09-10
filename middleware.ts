@@ -13,6 +13,12 @@ const dashboardRoute = "/";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
+  // In development mode, allow all routes without authentication
+  if (process.env.NODE_ENV === "development") {
+    console.log(`Middleware (DEV): ${pathname} - allowing access`);
+    return NextResponse.next();
+  }
+  
   // Check if the current path is a public route
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
   
@@ -26,11 +32,9 @@ export async function middleware(request: NextRequest) {
                        request.cookies.get("auth-session");
   const hasSession = !!sessionCookie?.value;
   
-  // Debug logging for development
-  if (process.env.NODE_ENV === "development") {
-    console.log(`Middleware: ${pathname}, hasSession: ${hasSession}, cookies:`, 
-      request.cookies.getAll().map(c => c.name));
-  }
+  // Debug logging for production
+  console.log(`Middleware: ${pathname}, hasSession: ${hasSession}, cookies:`, 
+    request.cookies.getAll().map(c => c.name));
   
   // If accessing a protected route without a session, redirect to login
   if (isProtectedRoute && !hasSession) {
