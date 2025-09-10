@@ -1,0 +1,56 @@
+
+> linkbird-clone@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use by an unknown process, using available port 3002 instead.
+   ▲ Next.js 15.5.2 (Turbopack)
+   - Local:        http://localhost:3002
+   - Network:      http://172.30.0.2:3002
+
+ ✓ Starting...
+ ✓ Compiled middleware in 150ms
+ ✓ Ready in 968ms
+ ○ Compiling /api/auth/[...all] ...
+ ✓ Compiled /api/auth/[...all] in 2.1s
+ GET /api/auth/session 404 in 3251ms
+ ○ Compiling /_not-found/page ...
+ ✓ Compiled /_not-found/page in 1938ms
+ GET /api/hello 404 in 2201ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled /api/test in 94ms
+ GET /api/test 200 in 332ms
+ GET /api/auth/test 404 in 333ms
+ ✓ Compiled middleware in 3ms
+ ✓ Compiled /api/auth-test in 304ms
+Testing auth imports...
+Database import successful
+Auth import successful
+ GET /api/auth-test 200 in 660ms
+Testing auth imports...
+Database import successful
+Auth import successful
+ GET /api/auth-test 200 in 233ms
+ GET /api/auth/session 404 in 344ms
+Auth GET request: http://localhost:3002/api/auth/session
+Auth GET response status: 404
+ GET /api/auth/session 404 in 336ms
+Auth POST request: http://localhost:3002/api/auth/sign-up/email
+# SERVER_ERROR:  [Error [BetterAuthError]: [# Drizzle Adapter]: The model "user" was not found in the schema object. Please pass the schema directly to the adapter options.] {
+  cause: undefined
+}
+Auth POST response status: 500
+ POST /api/auth/sign-up/email 500 in 258ms
+Auth POST request: http://localhost:3002/api/auth/sign-up/email
+# SERVER_ERROR:  [Error [BetterAuthError]: The field "token" does not exist in the "session" schema. Please update your drizzle schema or re-generate using "npx @better-auth/cli generate".] {
+  cause: undefined
+}
+Auth POST response status: 500
+ POST /api/auth/sign-up/email 500 in 1451ms
+Auth POST request: http://localhost:3002/api/auth/sign-up/email
+Auth POST response status: 200
+ POST /api/auth/sign-up/email 200 in 1389ms
+Auth POST request: http://localhost:3002/api/auth/sign-in/email
+Auth POST response status: 200
+ POST /api/auth/sign-in/email 200 in 1277ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled middleware in 1ms
