@@ -69,13 +69,18 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
 
     try {
       const fullName = `${firstName.trim()} ${lastName.trim()}`;
-      const result = await signUp(email, password, fullName);
+      const trimmedEmail = email.trim();
+      console.log("Attempting registration with email:", trimmedEmail);
+      
+      const result = await signUp(trimmedEmail, password, fullName);
       
       if (result.error) {
+        console.error("Registration failed:", result.error);
         setError(result.error);
         toast.error(result.error);
         setIsLoading(false);
       } else {
+        console.log("Registration successful, redirecting...");
         toast.success("Account created successfully! You are now signed in.");
         onSuccess?.();
         router.push("/campaigns");
@@ -157,7 +162,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
                 type="email"
                 placeholder="john.doe@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.trim())}
                 className="pl-10"
                 required
                 disabled={isLoading}

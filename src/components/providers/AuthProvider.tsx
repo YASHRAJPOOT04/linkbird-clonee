@@ -40,7 +40,7 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       const result = await authClient.signIn.email({
-        email,
+        email: email.trim(),
         password,
       });
 
@@ -62,7 +62,7 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, name: string) => {
     try {
       const result = await authClient.signUp.email({
-        email,
+        email: email.trim(),
         password,
         name,
       });
@@ -70,6 +70,8 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
       if (result.error) {
         return { error: result.error.message };
       } else {
+        // Add a small delay to ensure database transaction is committed
+        await new Promise(resolve => setTimeout(resolve, 100));
         setSession(result.data);
         return {};
       }
