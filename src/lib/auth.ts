@@ -32,9 +32,15 @@ export const auth = betterAuth({
     },
   }),
   secret: process.env.BETTER_AUTH_SECRET || "fallback-secret-for-development",
+  logger: {
+    level: "debug",
+    disabled: false,
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
+    minPasswordLength: 6,
+    maxPasswordLength: 128,
   },
   socialProviders: process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? {
     google: {

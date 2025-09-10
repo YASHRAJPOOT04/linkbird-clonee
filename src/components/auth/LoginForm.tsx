@@ -87,7 +87,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                 type="email"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value.trim())}
+                onChange={(e) => setEmail(e.target.value.trim().toLowerCase())}
                 className="pl-10"
                 required
                 disabled={isLoading}

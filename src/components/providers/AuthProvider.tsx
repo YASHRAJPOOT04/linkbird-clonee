@@ -39,8 +39,13 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
+      // Ensure email is trimmed and lowercase for consistency
+      const normalizedEmail = email.trim().toLowerCase();
+      
+      console.log("Attempting sign in with email:", normalizedEmail);
+      
       const result = await authClient.signIn.email({
-        email,
+        email: normalizedEmail,
         password,
       });
 
@@ -48,6 +53,7 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
         console.error("Sign in error:", result.error);
         return { error: result.error.message || "Invalid email or password" };
       } else if (result.data) {
+        console.log("Sign in successful:", result.data);
         setSession(result.data);
         return {};
       } else {
@@ -61,15 +67,22 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
+      // Ensure email is trimmed and lowercase for consistency
+      const normalizedEmail = email.trim().toLowerCase();
+      
+      console.log("Attempting sign up with email:", normalizedEmail);
+      
       const result = await authClient.signUp.email({
-        email,
+        email: normalizedEmail,
         password,
         name,
       });
 
       if (result.error) {
+        console.error("Sign up error:", result.error);
         return { error: result.error.message };
       } else {
+        console.log("Sign up successful:", result.data);
         setSession(result.data);
         return {};
       }
