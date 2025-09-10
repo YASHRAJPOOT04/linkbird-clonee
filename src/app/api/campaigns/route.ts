@@ -76,6 +76,17 @@ export async function GET(request: NextRequest) {
           metrics: mockMetrics,
           responseRate: Math.round(responseRate * 100) / 100,
           conversionRate: Math.round(conversionRate * 100) / 100,
+          // UI extras (not yet persisted):
+          description:
+            campaign.description ||
+            "Multi-touch campaign to drive conversions and re-engage leads.",
+          budget: campaign.budget ?? 5000,
+          tags:
+            campaign.tags || [
+              "email",
+              "retargeting",
+              campaign.status.toLowerCase(),
+            ],
         };
       })
     );

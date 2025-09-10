@@ -14,6 +14,9 @@ interface Campaign {
   status: "Draft" | "Active" | "Paused" | "Completed";
   createdAt: string;
   userId: string;
+  description?: string;
+  budget?: number;
+  tags?: string[];
   metrics: {
     totalLeads: number;
     contactedLeads: number;
@@ -75,6 +78,17 @@ export default function CampaignDetailSheet({
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
+          {campaign.description && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-700">{campaign.description}</p>
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>Performance</CardTitle>
@@ -104,6 +118,31 @@ export default function CampaignDetailSheet({
                 <Progress value={progressValue} className="h-2" />
                 <div className="text-xs text-gray-500">
                   {campaign.metrics.contactedLeads} contacted / {campaign.metrics.totalLeads} total
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Budget</div>
+                  <div className="text-sm font-medium">
+                    {typeof campaign.budget === "number" ? campaign.budget.toLocaleString(undefined, { style: "currency", currency: "USD" }) : "—"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Tags</div>
+                  <div className="flex flex-wrap gap-2">
+                    {(campaign.tags || []).map((tag) => (
+                      <Badge key={tag} variant="secondary">{tag}</Badge>
+                    ))}
+                    {(!campaign.tags || campaign.tags.length === 0) && <span className="text-sm text-gray-500">—</span>}
+                  </div>
                 </div>
               </div>
             </CardContent>

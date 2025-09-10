@@ -15,6 +15,9 @@ interface Campaign {
   status: "Draft" | "Active" | "Paused" | "Completed";
   createdAt: string;
   userId: string;
+  description?: string;
+  budget?: number;
+  tags?: string[];
   metrics: {
     totalLeads: number;
     contactedLeads: number;
