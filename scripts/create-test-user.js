@@ -26,7 +26,8 @@ async function createTestUser() {
       id: uuidv4(),
       userId: userId,
       accountId: 'test@example.com',
-      providerId: 'credential',
+      // better-auth credentials provider id is "email"
+      providerId: 'email',
       password: hashedPassword,
       createdAt: new Date(),
       updatedAt: new Date(),
