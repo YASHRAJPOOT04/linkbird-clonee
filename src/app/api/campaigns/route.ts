@@ -23,10 +23,37 @@ export async function GET(request: NextRequest) {
       .where(eq(campaigns.userId, userId))
       .orderBy(desc(campaigns.createdAt));
 
+    // If no campaigns exist for this user, provide demo campaigns
+    const baseCampaigns = userCampaigns.length > 0
+      ? userCampaigns
+      : [
+          {
+            id: "demo-campaign-1",
+            name: "Product Launch Q4",
+            status: "Active" as const,
+            createdAt: new Date(),
+            userId,
+          },
+          {
+            id: "demo-campaign-2",
+            name: "Black Friday Promo",
+            status: "Draft" as const,
+            createdAt: new Date(),
+            userId,
+          },
+          {
+            id: "demo-campaign-3",
+            name: "Win-Back Series",
+            status: "Paused" as const,
+            createdAt: new Date(),
+            userId,
+          },
+        ];
+
     // Calculate additional metrics for each campaign
     const campaignsWithMetrics = await Promise.all(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      userCampaigns.map(async (campaign: any) => {
+      baseCampaigns.map(async (campaign: any) => {
         // TODO: Add actual lead counts and metrics calculation
         // For now, we'll return mock data
         const mockMetrics = {

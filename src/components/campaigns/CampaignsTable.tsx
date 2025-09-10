@@ -185,7 +185,11 @@ export default function CampaignsTable({
                 const progressValue = (campaign.metrics.contactedLeads / campaign.metrics.totalLeads) * 100;
 
                 return (
-                  <TableRow key={campaign.id}>
+                  <TableRow
+                    key={campaign.id}
+                    className="cursor-pointer hover:bg-gray-50"
+                    onClick={() => onView?.(campaign)}
+                  >
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-900">
@@ -242,7 +246,7 @@ export default function CampaignsTable({
                     </TableCell>
                     
                     <TableCell>
-                      <DropdownMenu>
+                      <DropdownMenu onClick={(e) => e.stopPropagation()}>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
                             <MoreHorizontal className="h-4 w-4" />
