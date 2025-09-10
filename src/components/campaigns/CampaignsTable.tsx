@@ -246,7 +246,8 @@ export default function CampaignsTable({
                     </TableCell>
                     
                     <TableCell>
-                      <DropdownMenu onClick={(e) => e.stopPropagation()}>
+                      <div onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
                             <MoreHorizontal className="h-4 w-4" />
@@ -294,6 +295,7 @@ export default function CampaignsTable({
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

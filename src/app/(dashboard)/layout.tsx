@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useUIStore } from "@/lib/store/uiStore";
 import Sidebar from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -13,7 +11,6 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const router = useRouter();
   const sidebarCollapsed = useUIStore((state) => state.sidebarCollapsed);
   const toggleSidebarMobile = useUIStore((state) => state.toggleSidebarMobile);
 
