@@ -1,7 +1,18 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
-import { users, sessions, accounts, verifications } from "@/db/schema";
+
+// Dynamic schema import
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-require-imports */
+let schemaModule: any;
+if (process.env.NODE_ENV === "production") {
+  schemaModule = require("@/db/schema-pg");
+} else {
+  schemaModule = require("@/db/schema");
+}
+
+const { users, sessions, accounts, verifications } = schemaModule;
 
 // Get the deployment URL for trusted origins
 const getDeploymentUrl = () => {
@@ -23,7 +34,7 @@ const deploymentUrl = getDeploymentUrl();
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg",
+    provider: process.env.NODE_ENV === "production" ? "pg" : "sqlite",
     schema: {
       user: users,
       session: sessions,

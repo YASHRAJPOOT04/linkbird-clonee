@@ -197,7 +197,8 @@ export async function GET(request: NextRequest) {
         },
         summary: {
           totalLeads: totalLeads[0]?.count || 0,
-          statusCounts: statusCounts.reduce((acc, item) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          statusCounts: statusCounts.reduce((acc: any, item: any) => {
             acc[item.status] = item.count;
             return acc;
           }, {} as Record<string, number>),

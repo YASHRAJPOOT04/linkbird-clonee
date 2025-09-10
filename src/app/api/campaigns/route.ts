@@ -29,7 +29,8 @@ export async function GET(request: NextRequest) {
 
     // Calculate additional metrics for each campaign
     const campaignsWithMetrics = await Promise.all(
-      userCampaigns.map(async (campaign) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      userCampaigns.map(async (campaign: any) => {
         // TODO: Add actual lead counts and metrics calculation
         // For now, we'll return mock data
         const mockMetrics = {

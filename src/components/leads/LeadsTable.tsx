@@ -151,8 +151,11 @@ export default function LeadsTable({
   onLeadClick,
   onEdit,
   onDelete,
-  onStatusChange: _, // Future: direct status change from table
+  onStatusChange, // Future: direct status change from table
 }: LeadsTableProps) {
+  // Suppress unused parameter warning - onStatusChange will be used in future
+  void onStatusChange;
+  
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [campaignFilter, setCampaignFilter] = useState<string>("");
