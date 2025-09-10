@@ -23,7 +23,7 @@ const deploymentUrl = getDeploymentUrl();
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg",
+    provider: "sqlite",
     schema: {
       user: users,
       session: sessions,

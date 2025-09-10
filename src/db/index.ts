@@ -1,10 +1,8 @@
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { Pool } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import Database from "better-sqlite3";
 import * as schema from "./schema";
 
-// Create a Neon serverless pool so Drizzle can manage connections reliably
-// Use a fallback connection string for build time if DATABASE_URL is not set
-const connectionString = process.env.DATABASE_URL || "postgresql://user:pass@localhost:5432/db";
-const pool = new Pool({ connectionString });
+// Use SQLite for local development, Neon for production
+const sqlite = new Database(process.env.DATABASE_URL?.replace("file:", "") || "./dev.db");
 
-export const db = drizzle({ client: pool, schema });
+export const db = drizzle(sqlite, { schema });

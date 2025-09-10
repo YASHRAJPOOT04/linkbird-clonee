@@ -145,16 +145,48 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             type="button" 
             variant="outline" 
             className="w-full" 
-            onClick={(e) => {
+            onClick={async (e) => {
               e.preventDefault();
               console.log("Demo credentials button clicked");
-              setEmail("test@example.com");
-              setPassword("password123");
-              toast.success("Demo credentials filled!");
+              
+              // Create a new demo user each time for reliable testing
+              const demoEmail = `demo${Date.now()}@example.com`;
+              const demoPassword = "password123";
+              const demoName = "Demo User";
+              
+              setIsLoading(true);
+              try {
+                // First create the demo user
+                const result = await signUp(demoEmail, demoPassword, demoName);
+                if (result.error) {
+                  // If user creation fails, try to sign in (user might already exist)
+                  const signInResult = await signIn(demoEmail, demoPassword);
+                  if (signInResult.error) {
+                    // Fill the form with demo credentials for manual testing
+                    setEmail("demo@example.com");
+                    setPassword("password123");
+                    toast.success("Demo credentials filled! (Note: You may need to register first)");
+                  } else {
+                    toast.success("Signed in with demo account!");
+                    onSuccess?.();
+                    window.location.href = "/campaigns";
+                  }
+                } else {
+                  toast.success("Demo account created and signed in!");
+                  onSuccess?.();
+                  window.location.href = "/campaigns";
+                }
+              } catch (error) {
+                console.error("Demo login error:", error);
+                setEmail("demo@example.com");
+                setPassword("password123");
+                toast.success("Demo credentials filled! Please try signing in or registering.");
+              }
+              setIsLoading(false);
             }}
             disabled={isLoading}
           >
-            📋 Fill Demo Credentials
+            📋 {isLoading ? "Creating Demo Account..." : "Quick Demo Login"}
           </Button>
 
           {/* Direct Dashboard Access Button */}

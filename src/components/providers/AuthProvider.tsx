@@ -46,7 +46,16 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
 
       if (result.error) {
         console.error("Sign in error:", result.error);
-        return { error: result.error.message || "Invalid email or password" };
+        const errorMessage = result.error.message || "Invalid email or password";
+        
+        // Handle specific error cases
+        if (errorMessage.includes("USER_NOT_FOUND")) {
+          return { error: "User not found. Please check your email or sign up." };
+        } else if (errorMessage.includes("INVALID_PASSWORD")) {
+          return { error: "Invalid password. Please try again." };
+        }
+        
+        return { error: errorMessage };
       } else if (result.data) {
         setSession(result.data);
         return {};
@@ -68,14 +77,27 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (result.error) {
-        return { error: result.error.message };
-      } else {
+        const errorMessage = result.error.message || "Registration failed";
+        
+        // Handle specific error cases
+        if (errorMessage.includes("USER_ALREADY_EXISTS")) {
+          return { error: "An account with this email already exists. Please sign in instead." };
+        } else if (errorMessage.includes("INVALID_EMAIL")) {
+          return { error: "Please enter a valid email address." };
+        } else if (errorMessage.includes("PASSWORD_TOO_SHORT")) {
+          return { error: "Password must be at least 6 characters long." };
+        }
+        
+        return { error: errorMessage };
+      } else if (result.data) {
         setSession(result.data);
         return {};
+      } else {
+        return { error: "Registration failed. Please try again." };
       }
     } catch (error) {
       console.error("Sign up error:", error);
-      return { error: "Network error" };
+      return { error: "Network error. Please check your connection and try again." };
     }
   };
 
