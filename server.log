@@ -87,3 +87,4 @@ Auth handler created successfully
  ✓ Compiled /campaigns in 2.8s
  GET /campaigns 200 in 3112ms
  ✓ Compiled middleware in 2ms
+   Reload env: .env.local
