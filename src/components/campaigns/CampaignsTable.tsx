@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -90,7 +88,8 @@ export default function CampaignsTable({
   onView,
   onStatusChange,
 }: CampaignsTableProps) {
-  const [_selectedCampaign, _setSelectedCampaign] = useState<Campaign | null>(null);
+  // Future: selected campaign state for bulk operations
+  // const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
 
   const handleStatusChange = (campaign: Campaign, newStatus: Campaign["status"]) => {
     onStatusChange?.(campaign, newStatus);

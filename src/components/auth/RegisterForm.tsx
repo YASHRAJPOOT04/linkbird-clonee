@@ -76,11 +76,12 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         toast.error(result.error);
         setIsLoading(false);
       } else {
-        toast.success("Account created. Please verify your email to continue.");
+        toast.success("Account created successfully! You are now signed in.");
         onSuccess?.();
-        router.push("/login?verify=1");
+        router.push("/campaigns");
       }
-    } catch (err) {
+    } catch (error) {
+      console.error("Registration error:", error);
       const errorMessage = "Registration failed. Please try again.";
       setError(errorMessage);
       toast.error(errorMessage);
@@ -92,7 +93,8 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     setIsLoading(true);
     try {
       await signInWithGoogle();
-    } catch (err) {
+    } catch (error) {
+      console.error("Google registration error:", error);
       const errorMessage = "Google registration failed";
       setError(errorMessage);
       toast.error(errorMessage);

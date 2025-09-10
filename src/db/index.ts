@@ -3,6 +3,8 @@ import { Pool } from "@neondatabase/serverless";
 import * as schema from "./schema";
 
 // Create a Neon serverless pool so Drizzle can manage connections reliably
-const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+// Use a fallback connection string for build time if DATABASE_URL is not set
+const connectionString = process.env.DATABASE_URL || "postgresql://user:pass@localhost:5432/db";
+const pool = new Pool({ connectionString });
 
 export const db = drizzle({ client: pool, schema });

@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { campaigns } from "../../../db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    // Helpful diagnostics for 401s
-    const cookieHeader = request.headers.get("cookie") || "";
-    if (!cookieHeader.includes("better-auth.session_token")) {
-      return NextResponse.json({ error: "Unauthorized: missing session cookie" }, { status: 401 });
-    }
     // Get session from better-auth
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session) {
@@ -104,9 +99,11 @@ export async function POST(request: NextRequest) {
     const [newCampaign] = await db
       .insert(campaigns)
       .values({
+        id: crypto.randomUUID(),
         name: name.trim(),
         status: status as "Draft" | "Active" | "Paused" | "Completed",
         userId: userId,
+        createdAt: new Date(),
       })
       .returning({
         id: campaigns.id,
@@ -155,14 +152,14 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Update campaign
+    // Update campaign (only allow updates to user's own campaigns)
     const [updatedCampaign] = await db
       .update(campaigns)
       .set({
         ...(name && { name: name.trim() }),
         ...(status && { status }),
       })
-      .where(eq(campaigns.id, id))
+      .where(and(eq(campaigns.id, id), eq(campaigns.userId, userId)))
       .returning({
         id: campaigns.id,
         name: campaigns.name,
@@ -196,8 +193,16 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // TODO: Replace with actual better-auth session validation
-    const _userId = "demo-user-id";
+    // Get session from better-auth
+    const session = await auth.api.getSession({ 
+      headers: request.headers 
+    });
+    
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
+    const userId = session.user.id;
     
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -209,10 +214,10 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Delete campaign
+    // Delete campaign (only allow deletion of user's own campaigns)
     const [deletedCampaign] = await db
       .delete(campaigns)
-      .where(eq(campaigns.id, id))
+      .where(and(eq(campaigns.id, id), eq(campaigns.userId, userId)))
       .returning({
         id: campaigns.id,
         name: campaigns.name,

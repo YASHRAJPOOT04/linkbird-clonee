@@ -73,7 +73,8 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
         setSession(result.data);
         return {};
       }
-    } catch (_error) {
+    } catch (error) {
+      console.error("Sign up error:", error);
       return { error: "Network error" };
     }
   };

@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/lib/store/uiStore";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -47,16 +48,21 @@ interface SidebarProps {
 
 export default function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
+  const { session, signOut } = useAuth();
   const sidebarCollapsed = useUIStore((state) => state.sidebarCollapsed);
   const sidebarMobileOpen = useUIStore((state) => state.sidebarMobileOpen);
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const setSidebarMobileOpen = useUIStore((state) => state.setSidebarMobileOpen);
 
-  const handleLogout = () => {
-    // TODO: Implement actual logout with better-auth
-    console.log("Logout clicked");
-    // Clear any stored data and redirect to login
-    window.location.href = "/login";
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Fallback: redirect anyway
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -180,10 +186,10 @@ export default function Sidebar({ className }: SidebarProps) {
               {!sidebarCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    John Doe
+                    {session?.user?.name || "User"}
                   </p>
                   <p className="text-xs text-gray-500 truncate">
-                    john@example.com
+                    {session?.user?.email || ""}
                   </p>
                 </div>
               )}
