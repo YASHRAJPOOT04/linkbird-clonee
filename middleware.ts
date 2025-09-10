@@ -27,7 +27,9 @@ export async function middleware(request: NextRequest) {
                           pathname === dashboardRoute;
   
   // Check for better-auth session cookie with multiple possible names
-  const sessionCookie = request.cookies.get("better-auth.session_token") || 
+  // Newer Better Auth versions may use different cookie names or prefixes
+  const sessionCookie = request.cookies.get("better-auth.session_token") ||
+                       request.cookies.get("better-auth.session-token") ||
                        request.cookies.get("session_token") ||
                        request.cookies.get("auth-session");
   const hasSession = !!sessionCookie?.value;
