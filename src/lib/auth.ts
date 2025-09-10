@@ -31,6 +31,7 @@ const getDeploymentUrl = () => {
 };
 
 const deploymentUrl = getDeploymentUrl();
+const isHttpsDeployment = deploymentUrl.startsWith("https://");
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -60,17 +61,20 @@ export const auth = betterAuth({
       // Don't set domain to allow the cookie to work on the specific subdomain
       domain: undefined,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      // Derive secure flag from the deployment URL protocol to avoid issues on HTTP origins
+      secure: isHttpsDeployment,
     },
   },
   trustedOrigins: [
     deploymentUrl,
+    process.env.NEXT_PUBLIC_APP_URL || "",
+    process.env.BETTER_AUTH_URL || "",
     "http://localhost:3000",
     "http://localhost:3001",
     "http://192.168.29.208:3000",
     "http://192.168.29.208:3001",
     "https://linkbird-clone-kmqf.vercel.app",
-  ],
+  ].filter(Boolean),
 });
 
 export type Session = typeof auth.$Infer.Session;

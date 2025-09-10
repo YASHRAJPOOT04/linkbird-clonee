@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import CampaignsTable from "@/components/campaigns/CampaignsTable";
+import CampaignDetailSheet from "@/components/campaigns/CampaignDetailSheet";
 import { Plus, RefreshCw, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,6 +15,9 @@ interface Campaign {
   status: "Draft" | "Active" | "Paused" | "Completed";
   createdAt: string;
   userId: string;
+  description?: string;
+  budget?: number;
+  tags?: string[];
   metrics: {
     totalLeads: number;
     contactedLeads: number;
@@ -95,6 +99,8 @@ async function deleteCampaign(campaignId: string): Promise<void> {
 export default function CampaignsPage() {
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Fetch campaigns query
   const {
@@ -168,9 +174,8 @@ export default function CampaignsPage() {
   };
 
   const handleView = (campaign: Campaign) => {
-    // TODO: Implement view campaign details
-    console.log("View campaign:", campaign.id);
-    toast.info("View campaign details coming soon");
+    setSelectedCampaign(campaign);
+    setIsSheetOpen(true);
   };
 
   const handleStatusChange = (campaign: Campaign, newStatus: Campaign["status"]) => {
@@ -217,7 +222,7 @@ export default function CampaignsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="relative z-0 p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -301,6 +306,15 @@ export default function CampaignsPage() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         onView={handleView}
+        onStatusChange={handleStatusChange}
+      />
+
+      <CampaignDetailSheet
+        open={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
+        campaign={selectedCampaign}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
         onStatusChange={handleStatusChange}
       />
     </div>

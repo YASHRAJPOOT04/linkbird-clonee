@@ -79,11 +79,13 @@ export default function Sidebar({ className }: SidebarProps) {
       <div
         className={cn(
           "fixed left-0 top-0 z-50 h-full bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
-          "lg:translate-x-0 lg:static lg:z-auto",
-          sidebarMobileOpen ? "translate-x-0" : "-translate-x-full",
+          // Explicit width for mobile, collapse only affects lg
+          "w-64 lg:w-auto lg:translate-x-0 lg:static lg:z-auto",
+          sidebarMobileOpen ? "translate-x-0" : "-translate-x-full pointer-events-none",
           sidebarCollapsed ? "lg:w-16" : "lg:w-64",
           className
         )}
+        aria-hidden={!sidebarMobileOpen}
       >
         <div className="flex h-full flex-col">
           {/* Header */}
