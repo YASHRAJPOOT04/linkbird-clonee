@@ -43,7 +43,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       } else {
         toast.success("Successfully signed in!");
         onSuccess?.();
-        router.push("/campaigns");
+        // Force redirect to campaigns page
+        window.location.href = "/campaigns";
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -138,6 +139,60 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Signing in..." : "Sign in"}
           </Button>
+
+          {/* Demo Login Button */}
+          <Button 
+            type="button" 
+            variant="outline" 
+            className="w-full" 
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("Demo credentials button clicked");
+              setEmail("test@example.com");
+              setPassword("password123");
+              toast.success("Demo credentials filled!");
+            }}
+            disabled={isLoading}
+          >
+            📋 Fill Demo Credentials
+          </Button>
+
+          {/* Direct Dashboard Access Button */}
+          <div className="space-y-2">
+            <Button 
+              type="button" 
+              variant="secondary" 
+              className="w-full" 
+              onClick={(e) => {
+                e.preventDefault();
+                console.log("Dashboard button clicked");
+                toast.success("Opening dashboard...");
+                setTimeout(() => {
+                  window.location.href = "/campaigns";
+                }, 500);
+              }}
+              disabled={isLoading}
+            >
+              🚀 Go to Dashboard (Demo)
+            </Button>
+            
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full" 
+              onClick={(e) => {
+                e.preventDefault();
+                console.log("Demo dashboard button clicked");
+                toast.success("Opening demo dashboard...");
+                setTimeout(() => {
+                  window.location.href = "/demo-dashboard";
+                }, 500);
+              }}
+              disabled={isLoading}
+            >
+              🎯 Simple Demo Dashboard
+            </Button>
+          </div>
         </form>
 
 {process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED !== "false" && (
