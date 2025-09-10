@@ -43,8 +43,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       } else {
         toast.success("Successfully signed in!");
         onSuccess?.();
-        // Force redirect to campaigns page
-        window.location.href = "/campaigns";
+        // Use router.push for better navigation
+        setTimeout(() => {
+          router.push("/campaigns");
+        }, 100);
       }
     } catch (err) {
       console.error("Login error:", err);

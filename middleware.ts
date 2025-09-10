@@ -14,10 +14,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // In development mode, allow all routes without authentication
-  if (process.env.NODE_ENV === "development") {
-    console.log(`Middleware (DEV): ${pathname} - allowing access`);
-    return NextResponse.next();
-  }
+  console.log(`Middleware (DEV): ${pathname} - allowing access`);
+  return NextResponse.next();
   
   // Check if the current path is a public route
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
