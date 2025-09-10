@@ -157,7 +157,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
                 type="email"
                 placeholder="john.doe@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.trim().toLowerCase())}
                 className="pl-10"
                 required
                 disabled={isLoading}
