@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { campaigns } from "../../../db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
@@ -159,7 +159,7 @@ export async function PUT(request: NextRequest) {
         ...(name && { name: name.trim() }),
         ...(status && { status }),
       })
-      .where(eq(campaigns.id, id))
+      .where(and(eq(campaigns.id, id), eq(campaigns.userId, userId)))
       .returning({
         id: campaigns.id,
         name: campaigns.name,
@@ -217,7 +217,7 @@ export async function DELETE(request: NextRequest) {
     // Delete campaign (only allow deletion of user's own campaigns)
     const [deletedCampaign] = await db
       .delete(campaigns)
-      .where(eq(campaigns.id, id))
+      .where(and(eq(campaigns.id, id), eq(campaigns.userId, userId)))
       .returning({
         id: campaigns.id,
         name: campaigns.name,
