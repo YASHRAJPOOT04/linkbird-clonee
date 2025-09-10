@@ -31,9 +31,13 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     setError("");
 
     try {
-      const result = await signIn(email, password);
+      const trimmedEmail = email.trim();
+      console.log("Attempting login with email:", trimmedEmail);
+      
+      const result = await signIn(trimmedEmail, password);
       
       if (result.error) {
+        console.error("Login failed:", result.error);
         const errorMessage = result.error === "Invalid email or password" 
           ? "Invalid email or password. Please try again." 
           : result.error;
@@ -41,6 +45,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         toast.error(errorMessage);
         setIsLoading(false);
       } else {
+        console.log("Login successful, redirecting...");
         toast.success("Successfully signed in!");
         onSuccess?.();
         router.push("/campaigns");
